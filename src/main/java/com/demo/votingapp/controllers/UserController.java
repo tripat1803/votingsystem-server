@@ -46,7 +46,22 @@ public class UserController {
 
         String _at = this.jwtService.generateAccessToken(savedUser);
 
-        return ResponseEntity.ok(new AuthenticatedResponse(_at));
+        return ResponseEntity.ok(new AuthenticatedResponse(_at, savedUser.getRole().name()));
+    }
+
+    @PostMapping("/admin")
+    public ResponseEntity<?> registerAdmin(@RequestBody RegisterUser request) {
+        User user = new User();
+        user.setEmail(request.email);
+        user.setAdhaarCard(request.adhaarCard);
+        user.setName(request.name);
+        user.setPassword(passwordEncoder.encode(request.password));
+        user.setRole(Role.ADMIN);
+        User savedUser = this.userRepository.save(user);
+
+        String _at = this.jwtService.generateAccessToken(savedUser);
+
+        return ResponseEntity.ok(new AuthenticatedResponse(_at, savedUser.getRole().name()));
     }
 
     @PostMapping("")
@@ -56,6 +71,6 @@ public class UserController {
 
         String _at = this.jwtService.generateAccessToken(user);
 
-        return ResponseEntity.ok(new AuthenticatedResponse(_at));
+        return ResponseEntity.ok(new AuthenticatedResponse(_at, user.getRole().name()));
     }
 }
